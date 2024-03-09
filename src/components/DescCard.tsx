@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 
@@ -18,11 +19,9 @@ export default function DescCard({
 }: SiteData) {
   const router=useRouter();
 
-
-
   return (
     <>
-      <div className="z-5  w-full rounded-md bg-pink-100 p-2 shadow-lg">
+      <div className="z-5  w-full rounded-md bg-lime-50 p-2 shadow-lg">
         <div className="flex items-center justify-center">
           <div className="flex md:grid-rows-4 flex-col gap-4 md:grid md:grid-cols-12 p-3 w-full">
             <div className="col-span-5 row-span-4">

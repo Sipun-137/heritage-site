@@ -1,7 +1,7 @@
 "use client";
 
 import InputControl from "@/components/InputControl";
-import { SiteInfoFormControl } from "@/utils/input";
+import { StateFormControl } from "@/utils/input";
 
 import { Key, useState } from "react";
 import { initializeApp } from "firebase/app";
@@ -21,22 +21,20 @@ import {
   styled,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import {  AddPlace } from "@/services/admin/place";
+import {  AddStateInfo } from "@/services/admin/place";
 import toast, { Toaster } from "react-hot-toast";
 import { states } from "@/utils/state";
 
 interface formDataType {
   name: string;
-  state: string;
-  description: string;
-  imgurl: string[];
+  capital: string;
+  imgurl: string;
 }
 export default function Heritage() {
   const initialformData = {
     name: "",
-    state: "",
-    description: "",
-    imgurl: [],
+    capital: "",
+    imgurl: "",
   };
 
   const [formData, setFormData] = useState<any>(initialformData);
@@ -62,7 +60,7 @@ export default function Heritage() {
 
   async function helperForUploadingImageToFirebase(file: File) {
     const getFileName = createuniquefileName(file);
-    const storageReference = ref(storage, `heritage/${getFileName}`);
+    const storageReference = ref(storage, `state/${getFileName}`);
     const uploadImage = uploadBytesResumable(storageReference, file);
 
     return new Promise((resolve, reject) => {
@@ -84,33 +82,25 @@ export default function Heritage() {
   async function handleImage(event: any) {
     console.log(event.target.files);
     const imagefile = event.target.files;
-    console.log(imagefile.length);
-    let imgurls = [...formData.imgurl];
-    for (let i = 0; i < imagefile.length; i++) {
-      const extractImageUrl = await helperForUploadingImageToFirebase(
-        imagefile[i]
-      );
-      const newUrl: string = extractImageUrl as string;
-      if (newUrl !== "") {
-        imgurls.push(newUrl);
-      }
-    }
-    setFormData({ ...formData, imgurl: imgurls });
+    const extractImageUrl = await helperForUploadingImageToFirebase(
+      imagefile[0]
+    );
+    const newUrl: string = extractImageUrl as string;
+    setFormData({ ...formData, imgurl: newUrl });
   }
 
-  async function handleAddStateInfo() {
-    const response = await AddPlace(formData);
+  async function handleAddPlace() {
+    const response = await AddStateInfo(formData);
     if (response.success) {
       setFormData(initialformData);
       toast.success("Successfully created!");
     }
   }
-
   console.log(formData);
   return (
     <>
       <Toaster position="top-right" />
-      <title> Heritage | add-data </title>
+      <title> Heritage | Admin | State-Info </title>
       <section className="m-8">
         <div className="flex justify-center items-center">
           this is the data adding section for the site for the first time
@@ -127,25 +117,12 @@ export default function Heritage() {
                   startIcon={<CloudUploadIcon />}
                 >
                   Upload file
-                  <VisuallyHiddenInput
-                    type="file"
-                    multiple
-                    onChange={handleImage}
-                  />
+                  <VisuallyHiddenInput type="file" onChange={handleImage} />
                 </Button>
-                <hr />
-                <div className="text-blue-900 m-4 p-2">
-                  {formData.imgurl.map(
-                    (imgurl: any, index: Key | null | undefined) => (
-                      //  eslint-disable-next-line @next/next/no-img-element
-                      <img key={index} src={imgurl} alt="imgdata"/>
-                    )
-                  )}
-                </div>
               </div>
             </div>
             <div className=" flex  gap-3 flex-col m-9 ">
-              {SiteInfoFormControl.map((item, index) => (
+              {StateFormControl.map((item, index) => (
                 <div key={index}>
                   <InputControl
                     tid={item.id}
@@ -162,33 +139,12 @@ export default function Heritage() {
                   />
                 </div>
               ))}
-              <FormControl fullWidth>
-                <InputLabel id="demo-state-select-label">state</InputLabel>
-                <Select
-                  labelId="demo-state-select-label"
-                  id="demo-simple-select"
-                  value={formData.state}
-                  label="State"
-                  onChange={(event: any) => {
-                    setFormData({
-                      ...formData,
-                      state: event.target.value,
-                    });
-                  }}
-                >
-                  {states.map((state, index) => (
-                    <MenuItem key={index} value={state.name}>
-                      {state.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
               <div>
                 <Button
                   className="text-black"
                   variant="outlined"
                   size="small"
-                  onClick={handleAddStateInfo}
+                  onClick={handleAddPlace}
                 >
                   Add place
                 </Button>

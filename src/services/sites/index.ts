@@ -8,6 +8,15 @@ export const getAllData =async()=>{
     }
 }
 
+export const StateData=async (id:string)=>{
+    try {
+        const res=await axios.get(`http://localhost:3000/api/sites/state-id-data?id=${id}`)
+        return res.data.data
+    } catch (e:any) {
+        console.log(e)
+    }
+}
+
 export const AplaceData=async(id:string)=>{
     try {
         const res=await axios.get(`http://localhost:3000/api/sites/place-data?id=${id}`)
